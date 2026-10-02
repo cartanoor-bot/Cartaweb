@@ -38,14 +38,20 @@ def hero_art(t):
     return f'''<svg viewBox="0 0 500 525" role="img" aria-label="{e(t['hero_label'])}">
   <defs><clipPath id="pill-{t['lang']}"><rect x="80" y="30" width="250" height="470" rx="125"/></clipPath></defs>
   <circle cx="320" cy="215" r="175" style="fill:var(--spark)"/>
+  <circle cx="420" cy="70" r="26" style="fill:var(--sky)"/>
   <rect x="80" y="30" width="250" height="470" rx="125" style="fill:var(--lagoon)"/>
   <g clip-path="url(#pill-{t['lang']})" style="fill:none;stroke:var(--on-lagoon);stroke-width:2.5;opacity:.35">
     <path d="M40 300 q45 -26 90 0 t90 0 t90 0 t90 0"/><path d="M40 340 q45 -26 90 0 t90 0 t90 0 t90 0"/>
     <path d="M40 380 q45 -26 90 0 t90 0 t90 0 t90 0"/><path d="M40 420 q45 -26 90 0 t90 0 t90 0 t90 0"/>
     <path d="M40 460 q45 -26 90 0 t90 0 t90 0 t90 0"/>
   </g>
-  <circle cx="205" cy="165" r="52" style="fill:var(--on-lagoon);opacity:.92"/>
-  <path d="M120 300 a85 85 0 0 1 170 0 v20 h-170z" style="fill:var(--on-lagoon);opacity:.92"/>
+  <path d="M120 300 a85 85 0 0 1 170 0 v20 h-170z" style="fill:var(--white)"/>
+  <circle cx="205" cy="165" r="56" style="fill:var(--white)"/>
+  <circle cx="186" cy="160" r="11" style="fill:var(--night)"/><circle cx="224" cy="160" r="11" style="fill:var(--night)"/>
+  <circle class="eye" cx="189" cy="157" r="4" style="fill:var(--white)"/><circle class="eye" cx="227" cy="157" r="4" style="fill:var(--white)"/>
+  <rect class="lid" x="172" y="146" width="66" height="28" style="fill:var(--white)"/>
+  <path d="M190 186 q15 14 30 0" style="fill:none;stroke:var(--night);stroke-width:4;stroke-linecap:round"/>
+  <circle cx="172" cy="182" r="7" style="fill:var(--blush)"/><circle cx="238" cy="182" r="7" style="fill:var(--blush)"/>
   <rect x="370" y="420" width="64" height="64" rx="2" transform="rotate(8 402 452)" style="fill:var(--sticky)"/>
 </svg>'''
 
@@ -94,8 +100,8 @@ def head(t, css_href):
 <link rel="alternate" hreflang="en" href="{DOMAIN}/en/">
 <link rel="alternate" hreflang="x-default" href="{DOMAIN}/">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121219" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fffaf3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17132e" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rita Ovari">
 <meta property="og:title" content="{e(t['title'])}">
@@ -113,6 +119,16 @@ def head(t, css_href):
 {jsonld(t)}'''
 
 
+def hop(word, start):
+    return "".join(f'<span class="ch" style="--i:{start+i}">{e(c)}</span>' for i, c in enumerate(word))
+
+
+def headline(t):
+    a, b = t["hero_h1"]
+    return (f'<span class="sr-only">{e(a)} {e(b)}</span><span aria-hidden="true"><span class="w">{hop(a,0)}</span> '
+            f'<em class="ac w">{hop(b,len(a))}</em></span>')
+
+
 def body(t, preview=False):
     L = t["lang"]
     sid = (lambda x: f"{x}-{L}") if preview else (lambda x: x)
@@ -127,17 +143,17 @@ def body(t, preview=False):
     nav = "".join(f'<a href="#{a}">{e(b)}</a>' for a, b in t["nav"])
     facts = "".join(f"<li>{e(f)}</li>" for f in t["facts"])
     floats = "".join(f'<div class="float f{i+1}">{e(a)}<small>{e(b)}</small></div>' for i, (a, b) in enumerate(t["floats"]))
-    aud = "".join(f'''<article><span class="dot" style="background:var(--{c})"></span><h3>{e(h)}</h3><p>{e(p)}</p><span class="tagline">{e(tg)}</span></article>'''
-                  for c, h, p, tg in t["aud"])
+    aud = "".join(f'''<article class="rv" style="--d:{i}"><span class="dot" style="background:var(--{c})"></span><h3>{e(h)}</h3><p>{e(p)}</p><span class="tagline">{e(tg)}</span></article>'''
+                  for i, (c, h, p, tg) in enumerate(t["aud"]))
     cols = "".join(f'''<div class="col"><div class="col-h"><span class="label">{e(name)}</span><span class="count">{len(notes)}</span></div>'''
-                   + "".join(f'<article class="note {c}"><h3>{e(h)}</h3><p>{e(p)}</p></article>' for c, h, p in notes) + "</div>"
+                   + "".join(f'<article class="note {c}"><h3>{e(h)}</h3><p>{e(p)}</p><button class="pick" type="button" aria-pressed="false" data-title="{e(h)}" data-on="{e(t["picked"])}" data-off="{e(t["pick"])}">{e(t["pick"])}</button></article>' for c, h, p in notes) + "</div>"
                    for name, notes in t["cols"])
     formats = "".join(f'<span class="chip">{e(f)}</span>' for f in t["formats"])
-    steps = "".join(f"<li><h3>{e(h)}</h3><p>{e(p)}</p></li>" for h, p in t["steps"])
+    steps = "".join(f'<li class="rv" style="--d:{i}"><h3>{e(h)}</h3><p>{e(p)}</p></li>' for i, (h, p) in enumerate(t["steps"]))
     about_p = "".join(f"<p>{e(p)}</p>" for p in t["about_p"])
     creds = "".join(f"<li>{e(c)}</li>" for c in t["creds"])
     off = "".join(f"<span>{e(o)}</span>" for o in t["off"])
-    outs = "".join(f"<div><b>{n}</b><p>{e(p)}</p></div>" for n, p in t["outs"])
+    outs = "".join(f'<div class="rv" style="--d:{i}"><b>{n}</b><p>{e(p)}</p></div>' for i, (n, p) in enumerate(t["outs"]))
     faqs = "".join(f"<details><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in t["faqs"])
     who = "".join(f'<input type="radio" name="who" id="{sid("who"+str(i))}" value="{e(o)}"{" checked" if i==0 else ""}><label for="{sid("who"+str(i))}">{e(o)}</label>' for i, o in enumerate(t["f_who_opts"]))
     topics = "".join(f"<option>{e(o)}</option>" for o in t["f_topics"])
@@ -152,31 +168,31 @@ def body(t, preview=False):
   <a class="btn btn-primary btn-sm" href="#{ids[4]}">{e(t['cta_short'])} {ARROW}</a>
 </div></header>
 <main id="{sid('main')}">
-<section class="hero"><div class="wrap">
+<section class="hero"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span><div class="wrap">
   <div>
     <p class="label">{e(t['hero_label'])}</p>
-    <h1>{t['hero_h1']}</h1>
+    <h1>{headline(t)}</h1>
     <p class="lead">{e(t['hero_lead'])}</p>
     <div class="ctas"><a class="btn btn-primary" href="#{ids[4]}">{e(t['cta_primary'])} {ARROW}</a><a class="btn btn-ghost" href="#{ids[0]}">{e(t['cta_secondary'])} {ARROW}</a></div>
   </div>
-  <div class="hero-art">{hero_art(t)}{floats}</div>
+  <div class="hero-art" data-art>{hero_art(t)}{floats}<span class="drag-hint" aria-hidden="true">{e(t['drag_hint'])}</span></div>
 </div></section>
 <div class="facts" aria-label="{e(t['facts'][0])}"><ul>{facts}{facts.replace('<li>', '<li aria-hidden="true">')}</ul></div>
 
 <section class="sec" aria-labelledby="{sid('aud-h')}"><div class="wrap">
-  <div class="sec-head"><span class="label">{e(t['aud_label'])}</span><h2 id="{sid('aud-h')}">{t['aud_h2']}</h2><p class="lead muted">{e(t['aud_lead'])}</p></div>
+  <div class="sec-head rv"><span class="label">{e(t['aud_label'])}</span><h2 id="{sid('aud-h')}">{t['aud_h2']}</h2><p class="lead muted">{e(t['aud_lead'])}</p></div>
   <div class="aud">{aud}</div>
 </div></section>
 
 <section class="sec" id="{ids[0]}" aria-labelledby="{sid('srv-h')}" style="padding-top:0"><div class="wrap">
-  <div class="sec-head"><span class="label">{e(t['srv_label'])}</span><h2 id="{sid('srv-h')}">{t['srv_h2']}</h2><p class="lead muted">{e(t['srv_lead'])}</p></div>
-  <div class="board">{cols}</div>
+  <div class="sec-head rv"><span class="label">{e(t['srv_label'])}</span><h2 id="{sid('srv-h')}">{t['srv_h2']}</h2><p class="lead muted">{e(t['srv_lead'])}</p></div>
+  <div class="board rv" data-board>{cols}</div>
   <div class="formats">{formats}</div>
 </div></section>
 
 <section class="sec" id="{ids[1]}" aria-labelledby="{sid('proc-h')}" style="padding-top:0"><div class="wrap">
-  <div class="sec-head"><span class="label">{e(t['proc_label'])}</span><h2 id="{sid('proc-h')}">{t['proc_h2']}</h2></div>
-  <ol class="steps">{steps}</ol>
+  <div class="sec-head rv"><span class="label">{e(t['proc_label'])}</span><h2 id="{sid('proc-h')}">{t['proc_h2']}</h2></div>
+  <ol class="steps" data-steps>{steps}</ol>
 </div></section>
 
 <section class="sec band-dark about" id="{ids[2]}" aria-labelledby="{sid('about-h')}"><div class="wrap">
@@ -192,12 +208,12 @@ def body(t, preview=False):
 </div></section>
 
 <section class="sec" aria-labelledby="{sid('out-h')}"><div class="wrap">
-  <div class="sec-head"><span class="label">{e(t['out_label'])}</span><h2 id="{sid('out-h')}">{t['out_h2']}</h2></div>
+  <div class="sec-head rv"><span class="label">{e(t['out_label'])}</span><h2 id="{sid('out-h')}">{t['out_h2']}</h2></div>
   <div class="outs">{outs}</div>
 </div></section>
 
 <section class="sec faq" id="{ids[3]}" aria-labelledby="{sid('faq-h')}" style="padding-top:0"><div class="wrap">
-  <div class="sec-head"><span class="label">{e(t['faq_label'])}</span><h2 id="{sid('faq-h')}">{t['faq_h2']}</h2><p class="muted">{e(t['faq_lead'])}</p></div>
+  <div class="sec-head rv"><span class="label">{e(t['faq_label'])}</span><h2 id="{sid('faq-h')}">{t['faq_h2']}</h2><p class="muted">{e(t['faq_lead'])}</p></div>
   <div>{faqs}</div>
 </div></section>
 
@@ -225,6 +241,7 @@ def body(t, preview=False):
   </form>
 </div></section>
 </main>
+<div class="tray" data-tray role="status" aria-live="polite"><span><b data-count>0</b>{e(t['tray_txt'])}</span><a class="btn btn-sm" href="#{ids[4]}" data-tray-go data-prefill="{e(t['tray_prefill'])}">{e(t['tray_btn'])} {ARROW}</a></div>
 <footer><div class="wrap">
   <a class="mark" href="#{sid('main')}">Rita Ovari<i>.</i></a>
   <nav aria-label="Footer">{nav}<a href="#">{e(t['privacy'])}</a></nav>
@@ -237,9 +254,9 @@ def page(t, asset_prefix):
             f'<body>\n{body(t)}\n<script src="{asset_prefix}assets/main.js" defer></script>\n</body>\n</html>\n')
 
 
-FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#16151d"/>'
-           '<text x="11" y="46" font-family="Arial,sans-serif" font-weight="700" font-size="38" fill="#f4f1ea">R</text>'
-           '<circle cx="48" cy="42" r="6" fill="#ff6b4a"/></svg>\n')
+FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1a1530"/>'
+           '<text x="11" y="46" font-family="Arial,sans-serif" font-weight="700" font-size="38" fill="#fffaf3">R</text>'
+           '<circle cx="48" cy="42" r="6" fill="#ff5a3c"/></svg>\n')
 
 
 def build():
