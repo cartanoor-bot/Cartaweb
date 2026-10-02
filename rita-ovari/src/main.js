@@ -30,7 +30,7 @@
   }
 
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var COLORS = ['var(--sticky)', 'var(--blush)', 'var(--lagoon)', 'var(--sky)', 'var(--spark)', 'var(--lilac)'];
+  var COLORS = ['var(--butter)', 'var(--tulip)', 'var(--leaf)', 'var(--cornflower)', 'var(--cobalt)', 'var(--peach)'];
   function confetti(x, y, n) {
     if (calm) return;
     for (var i = 0; i < (n || 18); i++) {

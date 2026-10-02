@@ -28,19 +28,25 @@ SOCIALS = [
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC, OUT = os.path.join(ROOT, "src"), os.path.join(ROOT, "site")
-FONTS = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700"
-         "&family=Instrument+Serif:ital@1&family=Geist:wght@400;500&family=Geist+Mono:wght@500&display=swap")
+FONTS = ("https://fonts.googleapis.com/css2?family=Caprasimo&family=Kalam:wght@700"
+         "&family=Onest:wght@400;500;600&family=Martian+Mono:wght@500&display=swap")
 e = html.escape
 ARROW = '<span class="arr" aria-hidden="true">↗</span>'
+
+
+def flower(cls="", petal="var(--tulip)", centre="var(--butter)"):
+    import math
+    petals = "".join(f'<circle cx="{50+30*math.cos(math.radians(a)):.1f}" cy="{50+30*math.sin(math.radians(a)):.1f}" r="19" style="fill:{petal}"/>' for a in range(0, 360, 60))
+    return f'<svg class="{cls}" viewBox="0 0 100 100" aria-hidden="true">{petals}<circle cx="50" cy="50" r="18" style="fill:{centre}"/></svg>'
 
 
 def hero_art(t):
     return f'''<svg viewBox="0 0 500 525" role="img" aria-label="{e(t['hero_label'])}">
   <defs><clipPath id="pill-{t['lang']}"><rect x="80" y="30" width="250" height="470" rx="125"/></clipPath></defs>
-  <circle cx="320" cy="215" r="175" style="fill:var(--spark)"/>
-  <circle cx="420" cy="70" r="26" style="fill:var(--sky)"/>
-  <rect x="80" y="30" width="250" height="470" rx="125" style="fill:var(--lagoon)"/>
-  <g clip-path="url(#pill-{t['lang']})" style="fill:none;stroke:var(--on-lagoon);stroke-width:2.5;opacity:.35">
+  <circle cx="320" cy="215" r="175" style="fill:var(--cornflower)"/>
+  <circle cx="420" cy="70" r="26" style="fill:var(--peach)"/>
+  <rect x="80" y="30" width="250" height="470" rx="125" style="fill:var(--cobalt-deep)"/>
+  <g clip-path="url(#pill-{t['lang']})" style="fill:none;stroke:var(--white);stroke-width:2.5;opacity:.35">
     <path d="M40 300 q45 -26 90 0 t90 0 t90 0 t90 0"/><path d="M40 340 q45 -26 90 0 t90 0 t90 0 t90 0"/>
     <path d="M40 380 q45 -26 90 0 t90 0 t90 0 t90 0"/><path d="M40 420 q45 -26 90 0 t90 0 t90 0 t90 0"/>
     <path d="M40 460 q45 -26 90 0 t90 0 t90 0 t90 0"/>
@@ -51,15 +57,16 @@ def hero_art(t):
   <circle class="eye" cx="189" cy="157" r="4" style="fill:var(--white)"/><circle class="eye" cx="227" cy="157" r="4" style="fill:var(--white)"/>
   <rect class="lid" x="172" y="146" width="66" height="28" style="fill:var(--white)"/>
   <path d="M190 186 q15 14 30 0" style="fill:none;stroke:var(--night);stroke-width:4;stroke-linecap:round"/>
-  <circle cx="172" cy="182" r="7" style="fill:var(--blush)"/><circle cx="238" cy="182" r="7" style="fill:var(--blush)"/>
-  <rect x="370" y="420" width="64" height="64" rx="2" transform="rotate(8 402 452)" style="fill:var(--sticky)"/>
+  <circle cx="172" cy="182" r="7" style="fill:var(--tulip)"/><circle cx="238" cy="182" r="7" style="fill:var(--tulip)"/>
+  <g transform="translate(400 430)">{"".join(f'<circle cx="{c}" cy="{d}" r="24" style="fill:var(--tulip)"/>' for c, d in ((0,-36),(31,-18),(31,18),(0,36),(-31,18),(-31,-18)))}<circle r="22" style="fill:var(--butter)"/></g>
+  <ellipse cx="70" cy="470" rx="30" ry="13" transform="rotate(-30 70 470)" style="fill:var(--leaf)"/>
 </svg>'''
 
 
 def portrait(t):
     return f'''<figure class="portrait">
   <svg viewBox="0 0 400 500" role="img" aria-label="{e(t['photo_cap'])}">
-    <circle cx="250" cy="170" r="150" style="fill:var(--sticky)"/>
+    <circle cx="250" cy="170" r="150" style="fill:var(--butter)"/>
     <rect x="50" y="40" width="250" height="440" rx="125" style="fill:var(--bg-raised)"/>
     <circle cx="175" cy="185" r="56" style="fill:var(--ink-muted);opacity:.45"/>
     <path d="M85 400 a90 90 0 0 1 180 0 v80 h-180z" style="fill:var(--ink-muted);opacity:.45"/>
@@ -100,8 +107,8 @@ def head(t, css_href):
 <link rel="alternate" hreflang="en" href="{DOMAIN}/en/">
 <link rel="alternate" hreflang="x-default" href="{DOMAIN}/">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#fffaf3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#17132e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f5ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#110d2c" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rita Ovari">
 <meta property="og:title" content="{e(t['title'])}">
@@ -168,7 +175,7 @@ def body(t, preview=False):
   <a class="btn btn-primary btn-sm" href="#{ids[4]}">{e(t['cta_short'])} {ARROW}</a>
 </div></header>
 <main id="{sid('main')}">
-<section class="hero"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span><div class="wrap">
+<section class="hero"><span class="blob b1"></span>{flower("flower f-a")}<span class="blob b3"></span><span class="blob b4"></span><div class="wrap">
   <div>
     <p class="label">{e(t['hero_label'])}</p>
     <h1>{headline(t)}</h1>
@@ -207,6 +214,7 @@ def body(t, preview=False):
   </div>
 </div></section>
 
+<div class="divider" aria-hidden="true">{flower("", "var(--cobalt)", "var(--butter)")}{flower("", "var(--tulip)", "var(--white)")}{flower("", "var(--leaf)", "var(--butter)")}</div>
 <section class="sec" aria-labelledby="{sid('out-h')}"><div class="wrap">
   <div class="sec-head rv"><span class="label">{e(t['out_label'])}</span><h2 id="{sid('out-h')}">{t['out_h2']}</h2></div>
   <div class="outs">{outs}</div>
@@ -254,9 +262,9 @@ def page(t, asset_prefix):
             f'<body>\n{body(t)}\n<script src="{asset_prefix}assets/main.js" defer></script>\n</body>\n</html>\n')
 
 
-FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1a1530"/>'
-           '<text x="11" y="46" font-family="Arial,sans-serif" font-weight="700" font-size="38" fill="#fffaf3">R</text>'
-           '<circle cx="48" cy="42" r="6" fill="#ff5a3c"/></svg>\n')
+FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3d3dff"/>'
+           '<text x="11" y="46" font-family="Georgia,serif" font-weight="700" font-size="38" fill="#ffffff">R</text>'
+           '<circle cx="48" cy="42" r="6" fill="#ff4f8b"/></svg>\n')
 
 
 def build():
